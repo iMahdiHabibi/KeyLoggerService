@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KeyLoggerService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e6da5896af0b03bc9f448f9e1ac9968404e3947d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bcb475193b657981421d82f2aa816bccc6e94023")]
 [assembly: System.Reflection.AssemblyProductAttribute("KeyLoggerService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KeyLoggerService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

